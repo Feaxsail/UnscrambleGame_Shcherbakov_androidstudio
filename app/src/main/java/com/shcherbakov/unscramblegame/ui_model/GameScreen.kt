@@ -28,7 +28,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import com.shcherbakov.unscramblegame.data.MAX_NO_OF_WORDS
+import com.shcherbakov.unscramblegame.data.SCORE_INCREASE
 
 @Composable
 fun GameScreen(
@@ -63,6 +66,15 @@ fun GameScreen(
             onKeyboardDone = gameViewModel::checkUserGuess,
             isGuessWrong = gameUiState.isGuessedWordWrong,
             onSkipWord = gameViewModel::skipWord
+        )
+    }
+
+
+    if (gameUiState.isGameOver) {
+        GameOverDialog(
+            score = gameUiState.score,
+            wordCount = gameUiState.currentWordCount,
+            onPlayAgain = gameViewModel::resetGame
         )
     }
 }
@@ -167,4 +179,29 @@ fun GameLayout(
             Text("Пропустить")
         }
     }
+}
+
+@Composable
+fun GameOverDialog(
+    score: Int,
+    wordCount: Int,
+    onPlayAgain: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = { /* Do nothing */ },
+        title = { Text("Игра окончена!") },
+        text = {
+            Column {
+                Text("Поздравляем! Вы завершили игру.")
+                Text("Ваш счёт: $score из ${wordCount * SCORE_INCREASE}")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onPlayAgain) {
+                Text("Играть снова")
+            }
+        },
+        modifier = modifier
+    )
 }
